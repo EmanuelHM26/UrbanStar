@@ -136,6 +136,19 @@ body {
     overflow: hidden;
 }
 
+/* Hero background image */
+.hero-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    opacity: 0.5;
+    z-index: 0;
+}
+
 .hero::before {
     content: '';
     position: absolute;
@@ -146,6 +159,7 @@ body {
     background-image: 
         repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(231, 205, 50, 0.03) 2px, rgba(231, 205, 50, 0.03) 4px);
     pointer-events: none;
+    z-index: 1;
 }
 
 .hero-overlay {
@@ -155,12 +169,14 @@ body {
     right: 0;
     bottom: 0;
     background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.7) 100%);
+    z-index: 1;
 }
 
 .hero-content {
     text-align: center;
     z-index: 2;
     animation: fadeInUp 1s ease;
+    position: relative;
 }
 
 .hero-logo {
@@ -417,6 +433,22 @@ section {
 .card-icon {
     font-size: 60px;
     margin-bottom: 20px;
+}
+
+/* Image for discipline cards */
+.card-img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    display: block;
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.disciplina-card:hover .card-img {
+    transform: scale(1.05);
+    filter: brightness(1.1);
 }
 
 .disciplina-card h3 {
