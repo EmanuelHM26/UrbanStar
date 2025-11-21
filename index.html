@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Urban Star's </title>
+    <title>Urban Star's</title>
     <link rel="stylesheet" href="styles.css" />
     <link rel="icon" type="image/png" href="img/ESTRELLAURBAN.png" />
   </head>
@@ -40,10 +40,44 @@
       <div class="hero-overlay"></div>
       <div class="hero-content">
         <div class="hero-logo">
-          <img src="img/ESTRELLAURBAN.png" alt="Estrella Urban" class="hero-star-img" />
+          <img
+            src="img/ESTRELLAURBAN.png"
+            alt="Estrella Urban"
+            class="hero-star-img"
+          />
         </div>
         <h1 class="hero-title">URBAN STAR'S</h1>
-        <p class="hero-slogan">Sembramos cultura en la violencia</p>
+
+        <!-- Nueva animación de brochetazo 3D -->
+        <div class="hero-slogan-container">
+          <!-- Canvas para efectos de partículas de pintura -->
+          <canvas id="paintCanvas"></canvas>
+
+          <!-- Pincel animado en 3D -->
+          <div class="brush-container">
+            <div class="brush-3d">
+              <div class="brush-handle"></div>
+              <div class="brush-bristles"></div>
+            </div>
+          </div>
+
+          <!-- Capa de pintura que se revela -->
+          <div class="paint-layer"></div>
+
+          <!-- Salpicaduras de pintura -->
+          <div class="paint-splatter">
+            <div class="splatter"></div>
+            <div class="splatter"></div>
+            <div class="splatter"></div>
+            <div class="splatter"></div>
+            <div class="splatter"></div>
+            <div class="splatter"></div>
+          </div>
+
+          <!-- Texto del slogan -->
+          <p class="hero-slogan">Sembramos cultura en la violencia</p>
+        </div>
+
         <p class="hero-description">
           Transformando vidas a través del arte urbano, la música y el
           movimiento
@@ -378,7 +412,14 @@
     </footer>
 
     <!-- Botón Up: aparece al bajar y lleva al inicio -->
-    <button id="scrollUpBtn" class="scroll-up" aria-label="Ir arriba" title="Ir arriba">↑</button>
+    <button
+      id="scrollUpBtn"
+      class="scroll-up"
+      aria-label="Ir arriba"
+      title="Ir arriba"
+    >
+      ↑
+    </button>
 
     <script src="script.js"></script>
   </body>

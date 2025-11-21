@@ -60,6 +60,130 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
+// ========== ANIMACIÓN AVANZADA DE BROCHETAZO CON CANVAS ==========
+
+class PaintBrushAnimation {
+    constructor() {
+        this.canvas = document.getElementById('paintCanvas');
+        if (!this.canvas) return;
+        
+        this.ctx = this.canvas.getContext('2d');
+        this.particles = [];
+        this.animationStarted = false;
+        this.setupCanvas();
+        this.startAnimation();
+    }
+
+    setupCanvas() {
+        const container = document.querySelector('.hero-slogan-container');
+        const rect = container.getBoundingClientRect();
+        
+        this.canvas.width = 700;
+        this.canvas.height = 150;
+        this.canvas.style.width = '700px';
+        this.canvas.style.height = '150px';
+    }
+
+    createParticle(x, y) {
+        return {
+            x: x,
+            y: y,
+            vx: (Math.random() - 0.5) * 3,
+            vy: (Math.random() - 0.5) * 3,
+            size: Math.random() * 4 + 2,
+            alpha: 1,
+            color: `rgba(${231 + Math.random() * 20}, ${205 + Math.random() * 20}, ${50 + Math.random() * 10}, ${Math.random() * 0.3 + 0.7})`
+        };
+    }
+
+    startAnimation() {
+        let startTime = Date.now();
+        let brushX = -50;
+        let brushY = 75;
+        let progress = 0;
+
+        const animate = () => {
+            const elapsed = Date.now() - startTime;
+            progress = Math.min(elapsed / 2500, 1);
+
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+            // Curva del brochetazo
+            if (progress < 0.8) {
+                const curveProgress = progress / 0.8;
+                brushX = -50 + curveProgress * 750;
+                brushY = 75 + Math.sin(curveProgress * Math.PI) * 15;
+
+                // Crear partículas mientras el pincel se mueve
+                if (Math.random() > 0.3) {
+                    for (let i = 0; i < 3; i++) {
+                        this.particles.push(this.createParticle(
+                            brushX + (Math.random() - 0.5) * 30,
+                            brushY + (Math.random() - 0.5) * 30
+                        ));
+                    }
+                }
+
+                // Dibujar trazo principal del pincel
+                this.ctx.save();
+                this.ctx.globalAlpha = 0.3 + curveProgress * 0.4;
+                
+                // Efecto de trazo con múltiples capas
+                for (let i = 0; i < 5; i++) {
+                    this.ctx.beginPath();
+                    this.ctx.strokeStyle = `rgba(231, 205, 50, ${0.2 - i * 0.03})`;
+                    this.ctx.lineWidth = 50 - i * 8;
+                    this.ctx.lineCap = 'round';
+                    this.ctx.moveTo(Math.max(0, brushX - 100), brushY);
+                    this.ctx.lineTo(brushX, brushY);
+                    this.ctx.stroke();
+                }
+                
+                this.ctx.restore();
+            }
+
+            // Actualizar y dibujar partículas
+            this.particles = this.particles.filter(particle => {
+                particle.x += particle.vx;
+                particle.y += particle.vy;
+                particle.vy += 0.1; // Gravedad
+                particle.alpha -= 0.01;
+
+                if (particle.alpha > 0) {
+                    this.ctx.save();
+                    this.ctx.globalAlpha = particle.alpha;
+                    this.ctx.fillStyle = particle.color;
+                    this.ctx.beginPath();
+                    this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                    this.ctx.fill();
+                    this.ctx.restore();
+                    return true;
+                }
+                return false;
+            });
+
+            // Continuar animación mientras haya partículas o el pincel esté activo
+            if (progress < 1 || this.particles.length > 0) {
+                requestAnimationFrame(animate);
+            }
+        };
+
+        // Iniciar después de un pequeño delay
+        setTimeout(() => {
+            animate();
+        }, 300);
+    }
+}
+
+// Inicializar animación cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        new PaintBrushAnimation();
+    }, 500);
+});
+
+// ========== FIN ANIMACIÓN DE BROCHETAZO ==========
+
 // Animated counter for statistics
 const observerOptions = {
     threshold: 0.5,
@@ -68,8 +192,8 @@ const observerOptions = {
 
 const animateCounter = (element) => {
     const target = parseInt(element.getAttribute('data-target'));
-    const duration = 2000; // 2 seconds
-    const increment = target / (duration / 16); // 60fps
+    const duration = 2000;
+    const increment = target / (duration / 16);
     let current = 0;
 
     const updateCounter = () => {
@@ -136,33 +260,26 @@ if (contactForm) {
     contactForm.addEventListener('submit', (e) => {
         e.preventDefault();
 
-        // Get form values
         const nombre = contactForm.querySelector('input[type="text"]').value;
         const email = contactForm.querySelector('input[type="email"]').value;
         const telefono = contactForm.querySelector('input[type="tel"]').value;
         const disciplina = contactForm.querySelector('select').value;
         const mensaje = contactForm.querySelector('textarea').value;
 
-        // Basic validation
         if (!nombre || !email || !disciplina || !mensaje) {
             alert('Por favor completa todos los campos obligatorios.');
             return;
         }
 
-        // Email validation
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
             alert('Por favor ingresa un correo electrónico válido.');
             return;
         }
 
-        // Success message
         alert(`¡Gracias ${nombre}! Tu mensaje ha sido enviado. Nos pondremos en contacto contigo pronto.`);
-        
-        // Reset form
         contactForm.reset();
 
-        // In a real application, you would send this data to a server
         console.log({
             nombre,
             email,
@@ -182,7 +299,6 @@ if (newsletterForm) {
         
         const email = newsletterForm.querySelector('input[type="email"]').value;
         
-        // Email validation
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
             alert('Por favor ingresa un correo electrónico válido.');
@@ -192,12 +308,11 @@ if (newsletterForm) {
         alert('¡Gracias por suscribirte a nuestro newsletter!');
         newsletterForm.reset();
 
-        // In a real application, you would send this to a server
         console.log('Newsletter subscription:', email);
     });
 }
 
-// Gallery lightbox effect (improved version)
+// Gallery lightbox effect
 let lightboxActive = false;
 
 function createLightbox(imgSrc, imgAlt) {
@@ -205,7 +320,6 @@ function createLightbox(imgSrc, imgAlt) {
     
     lightboxActive = true;
     
-    // Create lightbox container
     const lightbox = document.createElement('div');
     lightbox.className = 'lightbox-overlay';
     lightbox.style.cssText = `
@@ -223,7 +337,6 @@ function createLightbox(imgSrc, imgAlt) {
         animation: fadeIn 0.3s ease;
     `;
     
-    // Create image
     const img = document.createElement('img');
     img.src = imgSrc;
     img.alt = imgAlt;
@@ -236,7 +349,6 @@ function createLightbox(imgSrc, imgAlt) {
         animation: zoomIn 0.3s ease;
     `;
     
-    // Create close button
     const closeBtn = document.createElement('button');
     closeBtn.innerHTML = '✕';
     closeBtn.style.cssText = `
@@ -268,10 +380,8 @@ function createLightbox(imgSrc, imgAlt) {
     lightbox.appendChild(closeBtn);
     document.body.appendChild(lightbox);
     
-    // Prevent body scroll
     document.body.style.overflow = 'hidden';
     
-    // Close lightbox function
     const closeLightbox = () => {
         lightboxActive = false;
         document.body.style.overflow = '';
@@ -283,14 +393,12 @@ function createLightbox(imgSrc, imgAlt) {
         }, 300);
     };
     
-    // Close on overlay click
     lightbox.addEventListener('click', (e) => {
         if (e.target === lightbox || e.target === closeBtn) {
             closeLightbox();
         }
     });
     
-    // Close on ESC key
     const handleEsc = (e) => {
         if (e.key === 'Escape') {
             closeLightbox();
@@ -300,7 +408,6 @@ function createLightbox(imgSrc, imgAlt) {
     document.addEventListener('keydown', handleEsc);
 }
 
-// Add click event to gallery items
 document.addEventListener('click', (e) => {
     const galleryItem = e.target.closest('.gallery-item');
     if (galleryItem && !galleryItem.classList.contains('hidden')) {
@@ -329,7 +436,7 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-// Testimonial slider (auto-rotate)
+// Testimonial slider
 const testimonioCards = document.querySelectorAll('.testimonio-card');
 let currentTestimonio = 0;
 
@@ -348,7 +455,6 @@ const rotateTestimonios = () => {
     currentTestimonio = (currentTestimonio + 1) % testimonioCards.length;
 };
 
-// Start testimonial rotation
 if (testimonioCards.length > 0) {
     setInterval(rotateTestimonios, 4000);
 }
@@ -376,20 +482,16 @@ if (scrollUpBtn) {
         }
     };
 
-    // Show/hide on scroll
     window.addEventListener('scroll', toggleScrollUp);
 
-    // Click -> smooth scroll to top
     scrollUpBtn.addEventListener('click', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        // for accessibility, move focus to top element after scroll
         const firstFocusable = document.querySelector('a, button, input, [tabindex]');
         if (firstFocusable) {
             firstFocusable.focus();
         }
     });
 
-    // Keyboard support: Enter/Space
     scrollUpBtn.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
@@ -437,25 +539,6 @@ revealSections.forEach(section => {
     sectionObserver.observe(section);
 });
 
-// Typing effect for hero slogan
-const heroSlogan = document.querySelector('.hero-slogan');
-if (heroSlogan) {
-    const text = heroSlogan.textContent;
-    heroSlogan.textContent = '';
-    let index = 0;
-
-    const typeWriter = () => {
-        if (index < text.length) {
-            heroSlogan.textContent += text.charAt(index);
-            index++;
-            setTimeout(typeWriter, 100);
-        }
-    };
-
-    // Start typing after a short delay
-    setTimeout(typeWriter, 500);
-}
-
 // Add dynamic year to footer
 const footerYear = document.querySelector('.footer-bottom p');
 if (footerYear) {
@@ -473,10 +556,9 @@ if (loadMoreBtn && hiddenItems.length > 0) {
             setTimeout(() => {
                 item.classList.remove('hidden');
                 item.classList.add('show');
-            }, index * 100); // Staggered animation
+            }, index * 100);
         });
         
-        // Hide button after showing all images
         loadMoreBtn.classList.add('hidden');
     });
 }
